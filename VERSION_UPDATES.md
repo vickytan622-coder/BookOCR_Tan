@@ -171,6 +171,90 @@
 
 ---
 
+### 下一版重点：Windows 系统支持
+
+**现状问题**
+
+当前 BookOCR_Tan 仅支持 Apple Silicon Mac，核心依赖和交互方式都绑定在 macOS 上：
+
+- 安装和启动使用 `.command` 脚本（macOS 专属）；
+- 文件选择器调用 `osascript`（AppleScript）；
+- API Key 保存使用 macOS 钥匙串（`security` 命令）；
+- MLX 加速依赖 Apple Silicon 的 Metal GPU；
+- 安装脚本检查 `uname -m` 是否为 `arm64`；
+- 部分命令如 `lsof`、`open`、`caffeinate` 在 Windows 上不存在或行为不同。
+
+**目标方案**
+
+让 BookOCR_Tan 可以在 Windows 上安装和运行，优先保证 CPU 路径可用，加速可选。
+
+具体方向：
+
+- 提供 Windows 安装脚本（`.bat` 或 PowerShell）；
+- 提供 Windows 启动脚本，双击即可启动 Web 服务并打开浏览器；
+- 用跨平台方式替换 `osascript` 文件选择器：
+  - 方案 A：Web 直接 `<input type="file">` 选择文件；
+  - 方案 B：Python 的 `tkinter.filedialog`；
+  - 方案 C：使用跨平台库如 `pydialog`/`zenity`。
+- API Key 在 Windows 上改用加密本地文件或 Windows Credential Manager；
+- MLX 加速在 Windows 上禁用或替换为 ONNX/DirectML 等替代方案；
+- CPU 兜底路径（PaddleOCR CPU）必须能在 Windows 正常跑通；
+- 路径处理统一使用 `pathlib`，避免硬编码 `/`；
+- 检测系统平台，给不同平台展示对应提示。
+
+**待细化问题**
+
+- 是否优先支持 Windows 11 + WSL2，还是原生 Windows？
+- Windows 上 Python 3.11/3.12 的安装方式（Microsoft Store / python.org / conda）？
+- PaddleOCR 在 Windows 上的模型缓存路径和依赖是否稳定？
+- 是否保留一个 macOS 专用分支，还是同一套代码多平台适配？
+
+**涉及文件**
+
+- 新增：`安装 BookOCR.bat` / `启动 BookOCR.bat`
+- `src/bookocr/config.py`（跨平台 Key 存储）
+- `src/bookocr/web.py`（跨平台文件选择、系统检测）
+- `src/bookocr/ocr.py`（平台相关路径和加速后端）
+- `README.md`（Windows 安装说明）
+
+---
+
+### P2：Web UI 界面美化
+
+**现状问题**
+
+当前 Web UI 是功能优先的简单排版：所有控件纵向堆叠、样式朴素、信息密度高。对普通用户来说：
+
+- 第一眼不知道从哪里开始；
+- 进度和状态不够醒目；
+- 按钮层级不清晰；
+- 没有响应式适配，窗口大小变化时体验不佳。
+
+**目标方案**
+
+在不改变核心功能的前提下，对 Web UI 进行视觉和交互优化：
+
+- 采用更清晰的信息分区：顶部状态栏、左侧/顶部导航、主工作区；
+- 创建任务、导出检查、LLM 校对使用卡片/标签页分隔；
+- 进度条和状态文字更醒目，成功/失败/运行中用颜色区分；
+- 按钮主次分明，核心操作突出；
+- 增加空状态提示（例如未创建任务时的引导）；
+- 响应式布局，适配不同窗口尺寸；
+- 保持中文界面，使用非技术语言。
+
+**设计原则**
+
+- 工具感、专业感，不过度花哨；
+- 浅色模式为主，后续可考虑深色模式；
+- 优先保证功能可用，再逐步美化。
+
+**涉及文件**
+
+- `src/bookocr/web.py`（内嵌 HTML/CSS/JS）
+- 可选：把 UI 拆分到独立静态文件（`static/` / `templates/`）
+
+---
+
 ## 待讨论/观察中的需求
 
 以下需求已在用户反馈或测试中发现，但尚未最终确认方案，需继续观察：
@@ -195,4 +279,4 @@
 
 ---
 
-*最后更新：2026-07-15（包含独立设置页面需求）*
+*最后更新：2026-07-15（包含 Windows 支持与 UI 美化需求）*
