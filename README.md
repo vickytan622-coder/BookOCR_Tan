@@ -1,6 +1,8 @@
 # BookOCR_Tan（Apple Silicon Mac 本地中文扫描书 OCR 工具）
 
 > 把中文扫描 PDF 在本机转换为可编辑、可核对的 Markdown。PDF 和 API Key 都只留在你的 Mac 上。
+>
+> **下一步迭代计划**：当前正在收集真实用户反馈，下一版将优先实现“一键工作流”。详见 [VERSION_UPDATES.md](VERSION_UPDATES.md)。
 
 ## 目录
 
