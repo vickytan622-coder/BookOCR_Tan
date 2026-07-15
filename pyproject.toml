@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bookocr"
+version = "0.1.0"
+description = "Local-first scanned Chinese book to Markdown workflow for Apple Silicon Macs"
+requires-python = ">=3.11,<3.13"
+dependencies = [
+  "pydantic>=2.10",
+  "pypdf>=5.0",
+  "PyMuPDF>=1.24",
+  "httpx>=0.27",
+]
+
+[project.optional-dependencies]
+ocr = [
+  "paddlepaddle==3.2.1",
+  "paddleocr[doc-parser]>=3.7,<3.8",
+]
+web = [
+  "fastapi>=0.115",
+  "uvicorn[standard]>=0.32",
+  "python-multipart>=0.0.20",
+]
+
+[project.scripts]
+bookocr = "bookocr.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]

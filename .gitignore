@@ -1,0 +1,16 @@
+.venv/
+.cache/
+tmp/
+output/
+build/
+*.egg-info/
+__pycache__/
+*.py[cod]
+.DS_Store
+.pytest_cache/
+
+# 本机验收辅助脚本：包含特定书名、任务 ID 或本地运行状态，不公开。
+测试 MLX 连接（1页）.command
+继续科学管理原理任务（MLX）.command
+重试失败页（CPU 回退）.command
+继续全书 LLM 校对.command
